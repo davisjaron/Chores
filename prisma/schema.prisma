@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Child {
+  id               String            @id @default(cuid())
+  name             String
+  color            String?
+  emoji            String?
+  age              Int?
+  pin              String?
+  active           Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  assignments      Assignment[]
+  claims           Claim[]
+  redemptions      Redemption[]
+  cashTransactions CashTransaction[]
+  unavailableDates    UnavailableDate[]
+  ledgerEntries       LedgerEntry[]
+  rewardSuggestions   RewardSuggestion[]
+  choreAssignments    ChoreAssignment[]
+}
+
+model Chore {
+  id                   String  @id @default(cuid())
+  name                 String
+  description          String?
+  emoji                String?
+  photo                String?
+  active               Boolean @default(true)
+  allowConcurrent      Boolean @default(false)
+  minAge               Int?
+  maxAge               Int?
+  points               Int     @default(1)
+  cashValue            Float?
+  maxClaimsPerDay      Int?
+  maxClaimsPerWeek     Int?
+  maxConsecutivePerKid Int?
+  maxTotalPerDay       Int?
+  maxTotalPerWeek      Int?
+  assignments          Assignment[]
+  claims               Claim[]
+  choreAssignments     ChoreAssignment[]
+}
+
+model Assignment {
+  id      String @id @default(cuid())
+  date    String
+  childId String
+  choreId String
+  status  String @default("pending")
+  child   Child  @relation(fields: [childId], references: [id], onDelete: Cascade)
+  chore   Chore  @relation(fields: [choreId], references: [id], onDelete: Cascade)
+
+  @@index([date])
+  @@index([childId])
+}
+
+model UnavailableDate {
+  id      String  @id @default(cuid())
+  childId String
+  date    String
+  reason  String?
+  child   Child   @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@index([childId, date])
+}
+
+model ScheduleSetting {
+  id                    String  @id @default("default")
+  startDate             String
+  endDate               String?
+  allowSameDay          Boolean @default(false)
+  mode                  String  @default("claim")
+  cashPerPoint          Float?
+  themeColor            String  @default("violet")
+  requireAssignedFirst  Boolean @default(false)
+  timezone              String  @default("America/Chicago")
+}
+
+model Reward {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  pointCost   Int
+  emoji       String?
+  active      Boolean      @default(true)
+  redemptions Redemption[]
+}
+
+model Claim {
+  id                 String  @id @default(cuid())
+  childId            String
+  choreId            String
+  status             String  @default("claimed")
+  claimedDate        String
+  completedDate      String?
+  points             Int?
+  cashAwarded        Float?
+  assignedByParent   Boolean @default(false)
+  choreAssignmentId  String?
+  child              Child   @relation(fields: [childId], references: [id], onDelete: Cascade)
+  chore              Chore   @relation(fields: [choreId], references: [id], onDelete: Cascade)
+
+  @@index([childId])
+  @@index([choreId, claimedDate])
+}
+
+model Redemption {
+  id          String @id @default(cuid())
+  childId     String
+  rewardId    String
+  date        String
+  pointsSpent Int
+  status      String @default("pending_approval")
+  child       Child  @relation(fields: [childId], references: [id], onDelete: Cascade)
+  reward      Reward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+}
+
+model CashTransaction {
+  id      String  @id @default(cuid())
+  childId String
+  date    String
+  kind    String
+  points  Int?
+  amount  Float
+  note    String?
+  child   Child   @relation(fields: [childId], references: [id], onDelete: Cascade)
+}
+
+model RewardSuggestion {
+  id        String   @id @default(cuid())
+  childId   String
+  name      String
+  createdAt DateTime @default(now())
+  child     Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, name])
+  @@index([name])
+}
+
+model ChoreAssignment {
+  id        String  @id @default(cuid())
+  childId   String
+  choreId   String
+  points    Int?
+  cashValue Float?
+  status    String  @default("pending")
+  date      String
+  child     Child   @relation(fields: [childId], references: [id], onDelete: Cascade)
+  chore     Chore   @relation(fields: [choreId], references: [id], onDelete: Cascade)
+
+  @@index([childId])
+  @@index([choreId])
+}
+
+model LedgerEntry {
+  id      String @id @default(cuid())
+  childId String
+  date    String
+  kind    String
+  amount  Float
+  note    String?
+  child   Child  @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@index([childId])
+  @@index([date])
+}

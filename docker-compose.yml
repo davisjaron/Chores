@@ -1,0 +1,16 @@
+services:
+  chore-chart:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      - DATABASE_URL=file:/app/data/dev.db
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-change-me-in-production}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost}
+      - SEED_ADMIN_PASSWORD=${SEED_ADMIN_PASSWORD:-password123}
+    volumes:
+      - chore-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  chore-data:

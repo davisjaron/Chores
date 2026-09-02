@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.env
+data
+*.db
+*.db-journal
+.ssh
+prisma/data
+*.sql
+*.dump
+DEPLOY.md
