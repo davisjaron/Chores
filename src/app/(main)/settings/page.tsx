@@ -9,7 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { IcsExportPanel } from "@/components/ics-export-panel";
 import { todayString } from "@/lib/utils";
 import { toast } from "sonner";
-import { Calendar, Trophy, Settings, Lock, Palette, Check, AlertTriangle, Globe } from "lucide-react";
+import { Calendar, Trophy, Settings, Lock, Palette, Check, AlertTriangle, Globe, HardDrive, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 const THEME_OPTIONS = [
   { id: "violet", label: "Violet", from: "#8b5cf6", to: "#d946ef", bg: "from-violet-100 via-fuchsia-50" },
@@ -359,6 +360,23 @@ export default function SettingsPage() {
           </Button>
         </CardContent>
       </Card>
+
+      <Link href="/settings/backup" className="block">
+        <Card className="hover:shadow-md transition-all cursor-pointer border-blue-100">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <HardDrive className="h-5 w-5 text-blue-600" />
+                <CardTitle>Backup & Recovery</CardTitle>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <CardDescription>
+              Configure automated backups to S3-compatible storage for disaster recovery.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </Link>
 
       <Card className="border-red-200">
         <CardHeader>

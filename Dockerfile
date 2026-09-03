@@ -1,5 +1,5 @@
 FROM node:20-alpine AS base
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl sqlite
 WORKDIR /app
 
 FROM base AS deps
@@ -29,6 +29,11 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/bcryptjs ./node_modules/bcryptjs
 COPY --from=builder /app/node_modules/sharp ./node_modules/sharp
+COPY --from=builder /app/node_modules/@aws-sdk ./node_modules/@aws-sdk
+COPY --from=builder /app/node_modules/@smithy ./node_modules/@smithy
+COPY --from=builder /app/node_modules/tslib ./node_modules/tslib
+COPY --from=builder /app/node_modules/uuid ./node_modules/uuid
+COPY --from=builder /app/node_modules/bowser ./node_modules/bowser
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN chmod +x /docker-entrypoint.sh && mkdir -p /app/data /app/data/uploads

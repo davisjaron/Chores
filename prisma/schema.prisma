@@ -181,3 +181,22 @@ model LedgerEntry {
   @@index([childId])
   @@index([date])
 }
+
+model BackupConfig {
+  id                  String  @id @default("default")
+  provider            String  @default("s3")
+  enabled             Boolean @default(false)
+  endpoint            String?
+  region              String?
+  bucket              String?
+  path                String  @default("chores-backups")
+  accessKeyEncrypted  String?
+  secretKeyEncrypted  String?
+  dailyBackupTime     String  @default("02:00")
+  retentionDays       Int     @default(30)
+  lastBackupAt        String?
+  lastBackupStatus    String?
+  lastBackupError     String?
+  lastBackupFile      String?
+  nextBackupAt        String?
+}
